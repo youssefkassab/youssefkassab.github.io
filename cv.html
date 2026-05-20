@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV — Youssef Kassab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    :root {
+      --bg:        #080b0f;
+      --surface:   #0d1117;
+      --card:      #111820;
+      --border:    #1e2d3d;
+      --accent:    #00d4ff;
+      --accent2:   #0ea5e9;
+      --accent3:   #7c3aed;
+      --muted:     #4a6274;
+      --text:      #e2eaf2;
+      --subtext:   #8ba3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      max-width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--surface);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+
+    .viewer-wrapper {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pdf-container {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pdf-container embed,
+    .pdf-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .no-support {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--subtext);
+    }
+
+    .no-support h2 {
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .no-support p {
+      margin-bottom: 16px;
+    }
+
+    .no-support a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .no-support a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Curriculum Vitae</h1>
+      <div class="header-actions">
+        <a href="Youssef_Kassab_CV%20(final).pdf" class="btn btn-primary" download>
+          ⬇️ Download PDF
+        </a>
+        <a href="index.html" class="btn">
+          ← Back to Portfolio
+        </a>
+      </div>
+    </div>
+
+    <div class="viewer-wrapper">
+      <div class="pdf-container" style="position: relative;">
+        <canvas id="pdf-canvas" style="width: 100%; height: 100%; display: block; background: #000;"></canvas>
+        <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 20;">
+          <button id="prev-btn" class="btn" onclick="prevPage()" style="padding: 8px 12px; font-size: 12px;">← Prev</button>
+          <span id="page-info" style="color: var(--text); display: flex; align-items: center; gap: 8px; font-size: 12px;"></span>
+          <button id="next-btn" class="btn" onclick="nextPage()" style="padding: 8px 12px; font-size: 12px;">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PDF_FILE = 'Youssef_Kassab_CV (final).pdf';
+    const PDF_URL = encodeURI(PDF_FILE);
+    let pdfDoc = null;
+    let currentPage = 1;
+    
+    // Set up PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
+    // Load PDF
+    async function loadPDF() {
+      try {
+        pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+        document.getElementById('page-info').textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+        renderPage(currentPage);
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        const container = document.querySelector('.pdf-container');
+        container.innerHTML = `
+          <div class="no-support">
+            <h2>Could not load the embedded PDF viewer.</h2>
+            <p>Your browser may be blocking local PDF loading from this page.</p>
+            <p>
+              <a href="${PDF_URL}" target="_blank" rel="noopener noreferrer">
+                Open the CV PDF in a new tab
+              </a>
+            </p>
+          </div>
+        `;
+      }
+    }
+    
+    async function renderPage(pageNum) {
+      try {
+        const page = await pdfDoc.getPage(pageNum);
+        const canvas = document.getElementById('pdf-canvas');
+        const context = canvas.getContext('2d');
+        
+        // Set scale for better quality
+        const scale = 2;
+        const viewport = page.getViewport({ scale: scale });
+        
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        
+        await page.render({
+          canvasContext: context,
+          viewport: viewport
+        }).promise;
+        
+        document.getElementById('page-info').textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+        document.getElementById('prev-btn').disabled = pageNum <= 1;
+        document.getElementById('next-btn').disabled = pageNum >= pdfDoc.numPages;
+      } catch (error) {
+        console.error('Error rendering page:', error);
+      }
+    }
+    
+    function nextPage() {
+      if (currentPage < pdfDoc.numPages) {
+        currentPage++;
+        renderPage(currentPage);
+      }
+    }
+    
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage(currentPage);
+      }
+    }
+    
+    // Load PDF when page loads
+    window.addEventListener('load', loadPDF);
+  </script>
+</body>
+</html>

@@ -445,6 +445,37 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════ NAVIGATION BAR ── -->
+<div style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, rgba(8, 11, 15, 0.95), transparent); padding: 16px 24px; z-index: 100; display: flex; justify-content: center;">
+  <a href="cv.html" style="
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: 1px solid var(--accent);
+    color: #000;
+    text-decoration: none;
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  " onmouseover="this.style.boxShadow='0 0 30px rgba(0, 212, 255, 0.4)'" onmouseout="this.style.boxShadow='0 0 20px rgba(0, 212, 255, 0.2)'">
+    📄 View CV
+  </a>
+</div>
+
+<!-- Add top padding to account for fixed nav -->
+<style>
+  body {
+    padding-top: 60px;
+  }
+</style>
+
 <!-- ═══════════════════════════════════════════════════ PAGE 1: Innovation Day + Docker -->
 <section class="page">
   <div class="page-header">

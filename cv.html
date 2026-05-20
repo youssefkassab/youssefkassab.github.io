@@ -101,16 +101,37 @@
       width: 100%;
       height: 100%;
       background: #000;
+      overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 20px 0;
     }
 
-    .pdf-container embed,
-    .pdf-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+    .pdf-page-canvas {
+      display: block;
+      margin: 10px auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      max-width: 90vw;
+    }
+
+    /* Custom scrollbar */
+    .pdf-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .pdf-container::-webkit-scrollbar-track {
+      background: var(--card);
+    }
+
+    .pdf-container::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .pdf-container::-webkit-scrollbar-thumb:hover {
+      background: var(--accent2);
     }
 
     .no-support {
@@ -145,7 +166,7 @@
     <div class="header">
       <h1>Curriculum Vitae</h1>
       <div class="header-actions">
-        <a href="Youssef_Kassab_CV%20(final).pdf" class="btn btn-primary" download>
+        <a href="Youssef_Kassab_CV (final).pdf" class="btn btn-primary" download>
           ⬇️ Download PDF
         </a>
         <a href="index.html" class="btn">
@@ -155,58 +176,50 @@
     </div>
 
     <div class="viewer-wrapper">
-      <div class="pdf-container" style="position: relative;">
-        <canvas id="pdf-canvas" style="width: 100%; height: 100%; display: block; background: #000;"></canvas>
-        <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 20;">
-          <button id="prev-btn" class="btn" onclick="prevPage()" style="padding: 8px 12px; font-size: 12px;">← Prev</button>
-          <span id="page-info" style="color: var(--text); display: flex; align-items: center; gap: 8px; font-size: 12px;"></span>
-          <button id="next-btn" class="btn" onclick="nextPage()" style="padding: 8px 12px; font-size: 12px;">Next →</button>
+      <div class="pdf-container" id="pdf-container">
+        <div style="text-align: center; padding: 40px 20px; color: var(--subtext);">
+          <p style="font-size: 14px;">Loading PDF...</p>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const PDF_FILE = 'Youssef_Kassab_CV (final).pdf';
-    const PDF_URL = encodeURI(PDF_FILE);
     let pdfDoc = null;
-    let currentPage = 1;
     
     // Set up PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     
-    // Load PDF
+    // Load and render all PDF pages
     async function loadPDF() {
       try {
-        pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
-        document.getElementById('page-info').textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
-        renderPage(currentPage);
+        pdfDoc = await pdfjsLib.getDocument('Youssef_Kassab_CV (final).pdf').promise;
+        const container = document.getElementById('pdf-container');
+        container.innerHTML = ''; // Clear loading message
+        
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          await renderPage(pageNum, container);
+        }
       } catch (error) {
         console.error('Error loading PDF:', error);
-        const container = document.querySelector('.pdf-container');
-        container.innerHTML = `
-          <div class="no-support">
-            <h2>Could not load the embedded PDF viewer.</h2>
-            <p>Your browser may be blocking local PDF loading from this page.</p>
-            <p>
-              <a href="${PDF_URL}" target="_blank" rel="noopener noreferrer">
-                Open the CV PDF in a new tab
-              </a>
-            </p>
+        document.getElementById('pdf-container').innerHTML = `
+          <div style="text-align: center; padding: 40px 20px; color: var(--subtext);">
+            <h2 style="color: var(--text); margin-bottom: 12px; font-size: 18px;">Error loading PDF</h2>
+            <p><a href="Youssef_Kassab_CV (final).pdf" target="_blank" style="color: var(--accent); text-decoration: none;">Click here to download the PDF</a></p>
           </div>
         `;
       }
     }
     
-    async function renderPage(pageNum) {
+    async function renderPage(pageNum, container) {
       try {
         const page = await pdfDoc.getPage(pageNum);
-        const canvas = document.getElementById('pdf-canvas');
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page-canvas';
         const context = canvas.getContext('2d');
         
-        // Set scale for better quality
-        const scale = 2;
-        const viewport = page.getViewport({ scale: scale });
+        const scale = window.devicePixelRatio || 1;
+        const viewport = page.getViewport({ scale: scale * 1.5 });
         
         canvas.width = viewport.width;
         canvas.height = viewport.height;
@@ -216,25 +229,9 @@
           viewport: viewport
         }).promise;
         
-        document.getElementById('page-info').textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-        document.getElementById('prev-btn').disabled = pageNum <= 1;
-        document.getElementById('next-btn').disabled = pageNum >= pdfDoc.numPages;
+        container.appendChild(canvas);
       } catch (error) {
-        console.error('Error rendering page:', error);
-      }
-    }
-    
-    function nextPage() {
-      if (currentPage < pdfDoc.numPages) {
-        currentPage++;
-        renderPage(currentPage);
-      }
-    }
-    
-    function prevPage() {
-      if (currentPage > 1) {
-        currentPage--;
-        renderPage(currentPage);
+        console.error('Error rendering page ' + pageNum + ':', error);
       }
     }
     

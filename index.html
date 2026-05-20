@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Engineering Portfolio — Youssef Kassab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg:        #080b0f;
+      --surface:   #0d1117;
+      --card:      #111820;
+      --border:    #1e2d3d;
+      --accent:    #00d4ff;
+      --accent2:   #0ea5e9;
+      --accent3:   #7c3aed;
+      --muted:     #4a6274;
+      --text:      #e2eaf2;
+      --subtext:   #8ba3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── PAGE SECTIONS ── */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      margin: 0 auto;
+      padding: 10mm 12mm;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle grid bg */
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    /* corner glow */
+    .page::after {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── HEADER BAR ── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6mm;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+
+    .page-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(0,212,255,0.25);
+      padding: 3px 10px;
+      border-radius: 2px;
+      background: rgba(0,212,255,0.05);
+    }
+
+    /* ── HEADLINE ── */
+    .headline-block {
+      margin-bottom: 5mm;
+      position: relative;
+      z-index: 1;
+    }
+
+    .headline-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .headline-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1.headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      line-height: 1.0;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    h1.headline .accent-word {
+      color: var(--accent);
+      -webkit-text-stroke: 0px;
+    }
+
+    /* ── IMAGE GRID SYSTEM ── */
+    .image-grid {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 3mm;
+      display: grid;
+      gap: 2mm;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    .image-grid.grid-2x2 {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, minmax(45mm, 1fr));
+    }
+
+    .image-grid.grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: minmax(55mm, 1fr);
+    }
+
+    .image-grid.grid-2-1 {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.2fr 0.8fr;
+    }
+
+    .image-grid.grid-2-1 .grid-item-wide {
+      grid-column: 1 / -1;
+    }
+
+    .image-grid.grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, minmax(55mm, 1fr));
+    }
+
+    /* Page 1: Photos smaller (0.6fr), Screenshots larger (1.4fr) */
+    .image-grid.page1-layout {
+      grid-template-columns: 0.6fr 1.4fr;
+      grid-template-rows: 1fr 1fr;
+      grid-template-areas:
+        "photo1 screenshot1"
+        "photo2 screenshot2";
+    }
+
+    .image-grid.page1-layout .grid-item:nth-child(1) { grid-area: photo1; }
+    .image-grid.page1-layout .grid-item:nth-child(2) { grid-area: photo2; }
+    .image-grid.page1-layout .grid-item:nth-child(3) { grid-area: screenshot1; }
+    .image-grid.page1-layout .grid-item:nth-child(4) { grid-area: screenshot2; }
+
+    /* Page 2: Mixed infrastructure - 2 wide on top, 2 square on bottom */
+    .image-grid.page2-layout {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.2fr 0.8fr;
+      grid-template-areas:
+        "wide1 wide2"
+        "sq1 sq2";
+    }
+
+    .image-grid.page2-layout .grid-item:nth-child(1) { grid-area: wide1; }
+    .image-grid.page2-layout .grid-item:nth-child(2) { grid-area: wide2; }
+    .image-grid.page2-layout .grid-item:nth-child(3) { grid-area: sq1; }
+    .image-grid.page2-layout .grid-item:nth-child(4) { grid-area: sq2; }
+
+    /* Page 3: Web screenshots - asymmetric for variety */
+    .image-grid.page3-layout {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      grid-template-areas:
+        "large top"
+        "large bottom";
+    }
+
+    .image-grid.page3-layout .grid-item:nth-child(1) { 
+      grid-area: large; 
+    }
+    .image-grid.page3-layout .grid-item:nth-child(2) { grid-area: top; }
+    .image-grid.page3-layout .grid-item:nth-child(3) { grid-area: bottom; }
+    .image-grid.page3-layout .grid-item:nth-child(4) { 
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+
+    .grid-item {
+      position: relative;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,212,255,0.08), 0 0 0 1px rgba(0,212,255,0.1);
+    }
+
+    .grid-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent3), transparent);
+      z-index: 2;
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      opacity: 0.95;
+      transition: opacity 0.2s ease;
+      background: #0a0f14;
+    }
+
+    .grid-item:hover img {
+      opacity: 1;
+    }
+
+    /* scanline overlay */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.06) 3px,
+        rgba(0,0,0,0.06) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── CAPTION BLOCK ── */
+    .caption-block {
+      position: relative;
+      z-index: 1;
+      padding: 3mm 4mm;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .caption-index {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      min-width: 24px;
+      padding-top: 2px;
+      letter-spacing: 0.1em;
+    }
+
+    .caption-text {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--subtext);
+      font-weight: 400;
+    }
+
+    .caption-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── FOOTER BAR ── */
+    .page-footer {
+      margin-top: 3mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding-top: 2mm;
+    }
+
+    .footer-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .footer-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .footer-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .footer-dots span.active {
+      background: var(--accent);
+    }
+
+    /* ── TECH TAGS ── */
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 4mm;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tech-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: var(--accent);
+      border: 1px solid rgba(0,212,255,0.2);
+      background: rgba(0,212,255,0.05);
+      padding: 2px 7px;
+      border-radius: 2px;
+      letter-spacing: 0.08em;
+    }
+
+    .tech-tag.purple {
+      color: #a78bfa;
+      border-color: rgba(167,139,250,0.2);
+      background: rgba(167,139,250,0.05);
+    }
+
+    .tech-tag.green {
+      color: #34d399;
+      border-color: rgba(52,211,153,0.2);
+      background: rgba(52,211,153,0.05);
+    }
+
+    /* ── PRINT RULES ── */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        background: var(--bg) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .page {
+        page-break-after: always;
+        break-after: page;
+        width: 210mm;
+        min-height: 297mm;
+        max-height: 297mm;
+        margin: 0;
+        padding: 10mm 12mm;
+        overflow: hidden;
+      }
+
+      .page:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      .grid-item {
+        box-shadow: 0 4px 16px rgba(0,212,255,0.06), 0 0 0 1px rgba(0,212,255,0.1) !important;
+        max-height: 120mm;
+      }
+
+      .grid-item img {
+        max-height: 100%;
+      }
+
+      .image-grid.grid-2x2 {
+        grid-template-rows: repeat(2, minmax(40mm, 1fr));
+      }
+
+      .image-grid.grid-3 {
+        grid-template-rows: minmax(50mm, 1fr);
+      }
+
+      .image-grid.page1-layout {
+        grid-template-columns: 0.6fr 1.4fr;
+        grid-template-rows: repeat(2, minmax(40mm, 1fr));
+      }
+
+      .image-grid.page2-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1.2fr 0.8fr;
+      }
+
+      .image-grid.page3-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(2, minmax(40mm, 1fr));
+      }
+
+      .image-grid.page3-layout .grid-item:nth-child(4) {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ PAGE 1: Innovation Day + Docker -->
+<section class="page">
+  <div class="page-header">
+    <span class="page-number">01 / 04</span>
+    <span class="page-tag">Infrastructure & DevOps</span>
+  </div>
+
+  <div class="headline-block">
+    <p class="headline-eyebrow">Systems Engineering · Field Deployment</p>
+    <h1 class="headline">
+      Containerized<br/>
+      <span class="accent-word">Offline Network</span><br/>
+      Deployment
+    </h1>
+  </div>
+
+  <div class="tech-tags">
+    <span class="tech-tag">Docker</span>
+    <span class="tech-tag">Linux Bare-Metal</span>
+    <span class="tech-tag">Rocket.Chat</span>
+    <span class="tech-tag green">Zero-Connectivity</span>
+    <span class="tech-tag green">Real-Time Tracking</span>
+    <span class="tech-tag">Innovation Day</span>
+  </div>
+
+  <!-- Asymmetric Grid: Small photos (left 0.6fr), Large screenshots (right 1.4fr) -->
+  <div class="image-grid page1-layout">
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/man ahyaha/527512533_18334327426201460_4904780385459916981_n.jpeg" alt="Innovation Day Event Setup" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/man ahyaha/FB_IMG_1754240608376.jpg" alt="Event Team Photo" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/Rocket chat-croped.png" alt="Rocket.Chat Deployment" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/Student score mangment ui2.png" alt="Innovation Day Scoring System" loading="lazy" />
+    </div>
+  </div>
+
+  <div class="caption-block">
+    <span class="caption-index">→ 01</span>
+    <p class="caption-text">
+      Architected a <strong>zero-connectivity localized network</strong> using a bare-metal Linux host and Docker containers.
+      Deployed Rocket.Chat and a live tracking database to coordinate 100+ youth participants at Man Ahyaha Innovation Day
+      in a remote environment — with no external internet dependency.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="footer-name">Youssef Kassab · Engineering Portfolio</span>
+    <div class="footer-dots">
+      <span class="active"></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ PAGE 2: HomeLab -->
+<section class="page">
+  <div class="page-header">
+    <span class="page-number">02 / 04</span>
+    <span class="page-tag">Persistent Systems Architecture</span>
+  </div>
+
+  <div class="headline-block">
+    <p class="headline-eyebrow">HomeLab · Hypervisor · Network Security</p>
+    <h1 class="headline">
+      Localized Server<br/>
+      <span class="accent-word">Ecosystem &</span><br/>
+      Network Security
+    </h1>
+  </div>
+
+  <div class="tech-tags">
+    <span class="tech-tag">VMware Hypervisor</span>
+    <span class="tech-tag">Windows 11</span>
+    <span class="tech-tag purple">AdGuard Home</span>
+    <span class="tech-tag purple">DNS Sinkholing</span>
+    <span class="tech-tag">SMB Routing</span>
+    <span class="tech-tag green">Internal Services</span>
+  </div>
+
+  <!-- Custom Grid: Infrastructure - Wide dashboards top, details bottom -->
+  <div class="image-grid page2-layout">
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/ad blocker-croped.png" alt="AdGuard DNS Statistics" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/home server-crop.png" alt="Home Server Dashboard" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/samba server2.png" alt="Samba File Sharing" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/Docker Desktop clean.png" alt="Docker Desktop Environment" loading="lazy" />
+    </div>
+  </div>
+
+  <div class="caption-block">
+    <span class="caption-index">→ 02</span>
+    <p class="caption-text">
+      Engineered a persistent <strong>Windows 11 / VMware hypervisor</strong> environment to orchestrate internal services.
+      Deployed <strong>network-wide DNS sinkholing</strong> via AdGuard Home (blocking 30K+ queries), configured secure SMB
+      data routing, and maintained 99.9% uptime on a production-grade home infrastructure.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="footer-name">Youssef Kassab · Engineering Portfolio</span>
+    <div class="footer-dots">
+      <span></span><span class="active"></span><span></span><span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ PAGE 3: Software Architecture -->
+<section class="page">
+  <div class="page-header">
+    <span class="page-number">03 / 04</span>
+    <span class="page-tag">Scalable Software & AI Pipelines</span>
+  </div>
+
+  <div class="headline-block">
+    <p class="headline-eyebrow">YK Software Studio · Enterprise Backend</p>
+    <h1 class="headline">
+      Enterprise<br/>
+      <span class="accent-word">Backend &</span><br/>
+      AI Development
+    </h1>
+  </div>
+
+  <div class="tech-tags">
+    <span class="tech-tag">Node.js</span>
+    <span class="tech-tag">Express.js</span>
+    <span class="tech-tag purple">LLM A/B Testing</span>
+    <span class="tech-tag purple">36 REST Endpoints</span>
+    <span class="tech-tag green">Digitopia Platform</span>
+    <span class="tech-tag">Full-Stack</span>
+  </div>
+
+  <!-- Balanced 2x2 Grid: All 4 Digitopia images equal sizing -->
+  <div class="image-grid grid-2x2">
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/Questro digtopia2.png" alt="Digitopia Homepage" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/digitopia home page2.png" alt="Digitopia Platform Overview" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/digitopia class room.png" alt="Digitopia Classroom Interface" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/digitopia games [exclent choice].png" alt="Digitopia Games Module" loading="lazy" />
+    </div>
+  </div>
+
+  <div class="caption-block">
+    <span class="caption-index">→ 03</span>
+    <p class="caption-text">
+      Developed full-stack architectures for institutional clients at YK Software Studio. Engineered the
+      <strong>Digitopia platform</strong> using Node.js/Express with <strong>36 RESTful API endpoints</strong> and strict
+      <strong>LLM A/B testing protocols</strong>. Built the Degla Smart Admin system serving 500+ daily active users.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="footer-name">Youssef Kassab · Engineering Portfolio</span>
+    <div class="footer-dots">
+      <span></span><span></span><span class="active"></span><span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ PAGE 4: Hardware Exploitation -->
+<section class="page">
+  <div class="page-header">
+    <span class="page-number">04 / 04</span>
+    <span class="page-tag">Firmware & Low-Level Systems</span>
+  </div>
+
+  <div class="headline-block">
+    <p class="headline-eyebrow">Legacy Hardware · Root-Level Access</p>
+    <h1 class="headline">
+      Legacy Hardware<br/>
+      <span class="accent-word">Optimization &</span><br/>
+      Firmware Access
+    </h1>
+  </div>
+
+  <div class="tech-tags">
+    <span class="tech-tag">Firmware Modification</span>
+    <span class="tech-tag">Bare-Metal Computing</span>
+    <span class="tech-tag purple">OEM Bypass</span>
+    <span class="tech-tag purple">Custom Dashboards</span>
+    <span class="tech-tag green">Legacy OS Architecture</span>
+    <span class="tech-tag">Root Access</span>
+  </div>
+
+  <!-- 2x2 Grid: iPad Terminal, Xbox 360 Aurora, PS2 Dashboards -->
+  <div class="image-grid grid-2x2">
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/iPad neofetch.PNG" alt="iPad Neofetch System Info" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/iPad terminal htop matrix.PNG" alt="iPad Matrix Terminal" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/xbox aroura.jpg" alt="Xbox 360 Aurora Dashboard" loading="lazy" />
+    </div>
+    <div class="grid-item">
+      <div class="scanlines"></div>
+      <img src="projects screenshots/ps2 home.jpg" alt="PS2 Custom Dashboard" loading="lazy" />
+    </div>
+  </div>
+
+  <div class="caption-block">
+    <span class="caption-index">→ 04</span>
+    <p class="caption-text">
+      Executed <strong>firmware-level modifications</strong> and custom dashboard installations to bypass OEM restrictions.
+      iPad root access with htop monitoring, <strong>Xbox 360 Aurora custom firmware</strong>, and PS2 dashboard modding —
+      demonstrating deep understanding of bare-metal computing and legacy OS architecture.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span class="footer-name">Youssef Kassab · Engineering Portfolio</span>
+    <div class="footer-dots">
+      <span></span><span></span><span></span><span class="active"></span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

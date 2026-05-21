@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CV — Youssef Kassab</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     :root {
@@ -14,63 +14,107 @@
       --border:    #1e2d3d;
       --accent:    #00d4ff;
       --accent2:   #0ea5e9;
-      --accent3:   #7c3aed;
       --muted:     #4a6274;
       --text:      #e2eaf2;
       --subtext:   #8ba3b8;
+      --header-h:  auto;
+      --pad-x:     clamp(12px, 4vw, 24px);
+      --pad-y:     clamp(12px, 3vw, 16px);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
     body {
+      min-height: 100%;
+      min-height: 100dvh;
       background: var(--bg);
       color: var(--text);
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .container {
+      width: 100%;
       max-width: 100%;
-      height: 100vh;
+      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
     .header {
+      flex-shrink: 0;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: var(--pad-y) var(--pad-x);
+      padding-top: max(var(--pad-y), env(safe-area-inset-top, 0px));
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 12px 16px;
       position: relative;
       z-index: 10;
     }
 
     .header h1 {
-      font-size: 20px;
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
       font-weight: 600;
       color: var(--text);
+      line-height: 1.2;
     }
 
     .header-actions {
       display: flex;
-      gap: 12px;
+      flex-wrap: wrap;
+      gap: clamp(8px, 2vw, 12px);
       align-items: center;
+      justify-content: flex-end;
+      width: auto;
+      max-width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .header-actions .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        min-width: 0;
+      }
     }
 
     .btn {
-      padding: 8px 16px;
+      padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
       border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--card);
       color: var(--text);
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s ease;
+      font-size: clamp(12px, 2.5vw, 14px);
+      font-family: inherit;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn:hover {
@@ -83,40 +127,56 @@
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border-color: var(--accent);
       color: #000;
+      font-weight: 600;
     }
 
     .btn-primary:hover {
-      opacity: 0.9;
+      color: #000;
+      opacity: 0.92;
       box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
     }
 
     .viewer-wrapper {
       flex: 1;
       display: flex;
+      min-height: 0;
       overflow: hidden;
       position: relative;
     }
 
     .pdf-container {
       width: 100%;
-      height: 100%;
-      background: #000;
+      flex: 1;
+      min-height: 0;
+      background: #050709;
       overflow-y: auto;
       overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 0;
+      padding: clamp(12px, 3vw, 24px) clamp(8px, 2vw, 16px);
+      padding-bottom: max(clamp(16px, 4vw, 32px), env(safe-area-inset-bottom, 0px));
+      gap: clamp(12px, 2.5vw, 20px);
+    }
+
+    .pdf-page-wrap {
+      width: 100%;
+      max-width: min(210mm, 100%);
+      display: flex;
+      justify-content: center;
     }
 
     .pdf-page-canvas {
       display: block;
-      margin: 10px auto;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      max-width: 90vw;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(30, 45, 61, 0.5);
+      border-radius: 4px;
+      background: #fff;
     }
 
-    /* Custom scrollbar */
     .pdf-container::-webkit-scrollbar {
       width: 8px;
     }
@@ -134,108 +194,243 @@
       background: var(--accent2);
     }
 
-    .no-support {
+    .status-message {
       text-align: center;
-      padding: 40px 20px;
+      padding: clamp(24px, 6vw, 48px) var(--pad-x);
       color: var(--subtext);
+      max-width: 36rem;
+      margin: 0 auto;
     }
 
-    .no-support h2 {
+    .status-message h2 {
       color: var(--text);
       margin-bottom: 12px;
-      font-size: 18px;
+      font-size: clamp(1rem, 4vw, 1.125rem);
+      font-weight: 600;
     }
 
-    .no-support p {
+    .status-message p {
       margin-bottom: 16px;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      line-height: 1.5;
     }
 
-    .no-support a {
+    .status-message a {
       color: var(--accent);
       text-decoration: none;
       font-weight: 500;
     }
 
-    .no-support a:hover {
+    .status-message a:hover {
       text-decoration: underline;
+    }
+
+    /* Large screens: center viewer with comfortable max width */
+    @media (min-width: 1024px) {
+      .pdf-container {
+        padding-inline: clamp(24px, 5vw, 48px);
+      }
+
+      .pdf-page-wrap {
+        max-width: min(210mm, calc(100% - 48px));
+      }
+    }
+
+    /* ── PRINT / SAVE AS PDF ── */
+    @media print {
+      @page {
+        margin: 0;
+      }
+
+      .header {
+        display: none !important;
+      }
+
+      html, body {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .container {
+        min-height: 0 !important;
+        height: auto !important;
+      }
+
+      .viewer-wrapper {
+        overflow: visible !important;
+        min-height: 0 !important;
+      }
+
+      .pdf-container {
+        overflow: visible !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        background: #fff !important;
+        align-items: stretch !important;
+      }
+
+      .pdf-page-wrap {
+        max-width: none !important;
+        width: 100% !important;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .pdf-page-wrap:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .pdf-page-canvas {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
+    <header class="header">
       <h1>Curriculum Vitae</h1>
       <div class="header-actions">
         <a href="Youssef_Kassab_CV (final).pdf" class="btn btn-primary" download>
-          ⬇️ Download PDF
+          <span aria-hidden="true">⬇️ </span>Download PDF
         </a>
         <a href="index.html" class="btn">
-          ← Back to Portfolio
+          <span aria-hidden="true">← </span>Back to Portfolio
         </a>
       </div>
-    </div>
+    </header>
 
     <div class="viewer-wrapper">
-      <div class="pdf-container" id="pdf-container">
-        <div style="text-align: center; padding: 40px 20px; color: var(--subtext);">
-          <p style="font-size: 14px;">Loading PDF...</p>
+      <div class="pdf-container" id="pdf-container" role="main" aria-live="polite">
+        <div class="status-message">
+          <p>Loading PDF…</p>
         </div>
       </div>
     </div>
   </div>
 
   <script>
+    const PDF_URL = 'Youssef_Kassab_CV (final).pdf';
     let pdfDoc = null;
-    
-    // Set up PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    
-    // Load and render all PDF pages
+    let renderGeneration = 0;
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    function getContainerContentWidth() {
+      const container = document.getElementById('pdf-container');
+      const styles = getComputedStyle(container);
+      const padX =
+        parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+      return Math.max(280, container.clientWidth - padX - 8);
+    }
+
+    function getRenderScale(page) {
+      const viewportAt1 = page.getViewport({ scale: 1 });
+      const cssWidth = getContainerContentWidth();
+      const fitScale = cssWidth / viewportAt1.width;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      return fitScale * dpr;
+    }
+
+    function showStatus(html) {
+      document.getElementById('pdf-container').innerHTML = html;
+    }
+
     async function loadPDF() {
+      const generation = ++renderGeneration;
       try {
-        pdfDoc = await pdfjsLib.getDocument('Youssef_Kassab_CV (final).pdf').promise;
+        pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+        if (generation !== renderGeneration) return;
+
         const container = document.getElementById('pdf-container');
-        container.innerHTML = ''; // Clear loading message
-        
+        container.innerHTML = '';
+
         for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-          await renderPage(pageNum, container);
+          if (generation !== renderGeneration) return;
+          await renderPage(pageNum, container, generation);
         }
       } catch (error) {
         console.error('Error loading PDF:', error);
-        document.getElementById('pdf-container').innerHTML = `
-          <div style="text-align: center; padding: 40px 20px; color: var(--subtext);">
-            <h2 style="color: var(--text); margin-bottom: 12px; font-size: 18px;">Error loading PDF</h2>
-            <p><a href="Youssef_Kassab_CV (final).pdf" target="_blank" style="color: var(--accent); text-decoration: none;">Click here to download the PDF</a></p>
+        showStatus(`
+          <div class="status-message">
+            <h2>Error loading PDF</h2>
+            <p><a href="${PDF_URL}" target="_blank" rel="noopener">Open or download the PDF directly</a></p>
           </div>
-        `;
+        `);
       }
     }
-    
-    async function renderPage(pageNum, container) {
+
+    async function renderPage(pageNum, container, generation) {
       try {
         const page = await pdfDoc.getPage(pageNum);
+        if (generation !== renderGeneration) return;
+
+        const scale = getRenderScale(page);
+        const viewport = page.getViewport({ scale });
+
+        const wrap = document.createElement('div');
+        wrap.className = 'pdf-page-wrap';
+        wrap.setAttribute('data-page', String(pageNum));
+
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page-canvas';
+        canvas.setAttribute('aria-label', `CV page ${pageNum} of ${pdfDoc.numPages}`);
+
         const context = canvas.getContext('2d');
-        
-        const scale = window.devicePixelRatio || 1;
-        const viewport = page.getViewport({ scale: scale * 1.5 });
-        
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        
-        await page.render({
-          canvasContext: context,
-          viewport: viewport
-        }).promise;
-        
-        container.appendChild(canvas);
+
+        const cssWidth = getContainerContentWidth();
+        canvas.style.width = cssWidth + 'px';
+        canvas.style.height =
+          (viewport.height / viewport.width) * cssWidth + 'px';
+
+        await page.render({ canvasContext: context, viewport }).promise;
+        if (generation !== renderGeneration) return;
+
+        wrap.appendChild(canvas);
+        container.appendChild(wrap);
       } catch (error) {
         console.error('Error rendering page ' + pageNum + ':', error);
       }
     }
-    
-    // Load PDF when page loads
+
+    async function rerenderAll() {
+      if (!pdfDoc) return;
+      renderGeneration++;
+      const generation = renderGeneration;
+      const container = document.getElementById('pdf-container');
+      container.innerHTML = '';
+      for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+        if (generation !== renderGeneration) return;
+        await renderPage(pageNum, container, generation);
+      }
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(rerenderAll, 200);
+    });
+
+    window.addEventListener('orientationchange', () => {
+      setTimeout(rerenderAll, 300);
+    });
+
     window.addEventListener('load', loadPDF);
   </script>
 </body>
